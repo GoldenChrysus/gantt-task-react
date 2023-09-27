@@ -170,6 +170,10 @@ export const StandardTooltipContent: React.FC<{
       <p className={styles.tooltipDefaultContainerParagraph}>
         {!!task.progress && `Progress: ${task.progress} %`}
       </p>
+
+      <p className={styles.tooltipDefaultContainerParagraph}>
+        {!!task.state && `Status: ${task.state.charAt(0).toUpperCase() + task.state.slice(1)}`}
+      </p>
     </div>
   );
 };

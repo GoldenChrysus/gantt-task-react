@@ -1,4 +1,4 @@
-import { Task } from "../types/public-types";
+import { Task, TaskState } from "../types/public-types";
 import { BarTask, TaskTypeInternal } from "../types/bar-task";
 import { BarMoveAction } from "../types/gantt-task-actions";
 
@@ -20,7 +20,8 @@ export const convertToBarTasks = (
   projectBackgroundColor: string,
   projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
-  milestoneBackgroundSelectedColor: string
+  milestoneBackgroundSelectedColor: string,
+  stateColors: Record<TaskState, string>,
 ) => {
   let barTasks = tasks.map((t, i) => {
     return convertToBarTask(
@@ -42,7 +43,8 @@ export const convertToBarTasks = (
       projectBackgroundColor,
       projectBackgroundSelectedColor,
       milestoneBackgroundColor,
-      milestoneBackgroundSelectedColor
+      milestoneBackgroundSelectedColor,
+      stateColors,
     );
   });
 
@@ -80,7 +82,8 @@ const convertToBarTask = (
   projectBackgroundColor: string,
   projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
-  milestoneBackgroundSelectedColor: string
+  milestoneBackgroundSelectedColor: string,
+  stateColors: Record<TaskState, string>,
 ): BarTask => {
   let barTask: BarTask;
   switch (task.type) {
@@ -95,7 +98,7 @@ const convertToBarTask = (
         barCornerRadius,
         handleWidth,
         milestoneBackgroundColor,
-        milestoneBackgroundSelectedColor
+        milestoneBackgroundSelectedColor,
       );
       break;
     case "project":
@@ -112,7 +115,8 @@ const convertToBarTask = (
         projectProgressColor,
         projectProgressSelectedColor,
         projectBackgroundColor,
-        projectBackgroundSelectedColor
+        projectBackgroundSelectedColor,
+        stateColors,
       );
       break;
     default:
@@ -129,12 +133,25 @@ const convertToBarTask = (
         barProgressColor,
         barProgressSelectedColor,
         barBackgroundColor,
-        barBackgroundSelectedColor
+        barBackgroundSelectedColor,
+        stateColors,
       );
       break;
   }
   return barTask;
 };
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+  return result
+    ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    }
+    : null;
+}
 
 const convertToBar = (
   task: Task,
@@ -149,7 +166,8 @@ const convertToBar = (
   barProgressColor: string,
   barProgressSelectedColor: string,
   barBackgroundColor: string,
-  barBackgroundSelectedColor: string
+  barBackgroundSelectedColor: string,
+  stateColors: Record<TaskState, string>,
 ): BarTask => {
   let x1: number;
   let x2: number;
@@ -174,12 +192,36 @@ const convertToBar = (
   );
   const y = taskYCoordinate(index, rowHeight, taskHeight);
   const hideChildren = task.type === "project" ? task.hideChildren : undefined;
-
-  const styles = {
+  const color_styles = {
     backgroundColor: barBackgroundColor,
     backgroundSelectedColor: barBackgroundSelectedColor,
     progressColor: barProgressColor,
     progressSelectedColor: barProgressSelectedColor,
+  }
+
+  if (task.state && task.state in stateColors) {
+    let progress_color = stateColors[task.state];
+    let progress_selected_color = progress_color;
+    let background_selected_color = progress_color;
+    const rgb = hexToRgb(progress_color);
+
+    if (rgb) {
+      if (task.type === "project") {
+        progress_color = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.75)`;
+        progress_selected_color = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
+      }
+
+      background_selected_color = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.85)`;
+    }
+
+    color_styles.backgroundColor = stateColors[task.state];
+    color_styles.backgroundSelectedColor = background_selected_color;
+    color_styles.progressColor = progress_color;
+    color_styles.progressSelectedColor = progress_selected_color;
+  }
+
+  const styles = {
+    ...color_styles,
     ...task.styles,
   };
   return {

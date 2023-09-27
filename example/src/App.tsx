@@ -76,6 +76,7 @@ const App = () => {
       />
       <h3>Gantt With Unlimited Height</h3>
       <Gantt
+        key="gantt-unlimited"
         tasks={tasks}
         viewMode={view}
         onDateChange={handleTaskChange}
@@ -90,6 +91,7 @@ const App = () => {
       />
       <h3>Gantt With Limited Height</h3>
       <Gantt
+        key="gantt-limited"
         tasks={tasks}
         viewMode={view}
         onDateChange={handleTaskChange}

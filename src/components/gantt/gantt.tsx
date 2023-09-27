@@ -46,6 +46,14 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   projectBackgroundSelectedColor = "#f7bb53",
   milestoneBackgroundColor = "#f1c453",
   milestoneBackgroundSelectedColor = "#f29e4c",
+  stateColors = {
+    running: "#a3a3ff",
+    failed: "#ff4d4d",
+    blocked: "#f7bb53",
+    waiting: "#aeaeae",
+    cached: "#228b22",
+    completed: "#228b22",
+  },
   rtl = false,
   handleWidth = 8,
   timeStep = 300000,
@@ -68,38 +76,9 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
-  const [dateSetup, setDateSetup] = useState<DateSetup>(() => {
-    const [startDate, endDate] = ganttDateRange(tasks, viewMode, preStepsCount);
-    return { viewMode, dates: seedDates(startDate, endDate, viewMode) };
-  });
-  const [currentViewDate, setCurrentViewDate] = useState<Date | undefined>(
-    undefined
-  );
-
-  const [taskListWidth, setTaskListWidth] = useState(0);
-  const [svgContainerWidth, setSvgContainerWidth] = useState(0);
-  const [svgContainerHeight, setSvgContainerHeight] = useState(ganttHeight);
-  const [barTasks, setBarTasks] = useState<BarTask[]>([]);
-  const [ganttEvent, setGanttEvent] = useState<GanttEvent>({
-    action: "",
-  });
-  const taskHeight = useMemo(
-    () => (rowHeight * barFill) / 100,
-    [rowHeight, barFill]
-  );
-
-  const [selectedTask, setSelectedTask] = useState<BarTask>();
-  const [failedTask, setFailedTask] = useState<BarTask | null>(null);
-
-  const svgWidth = dateSetup.dates.length * columnWidth;
-  const ganttFullHeight = barTasks.length * rowHeight;
-
   const [scrollY, setScrollY] = useState(0);
   const [scrollX, setScrollX] = useState(-1);
-  const [ignoreScrollEvent, setIgnoreScrollEvent] = useState(false);
-
-  // task change events
-  useEffect(() => {
+  const dateSetup = useMemo<DateSetup>(() => {
     let filteredTasks: Task[];
     if (onExpanderClick) {
       filteredTasks = removeHiddenTasks(tasks);
@@ -121,33 +100,59 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
       }
     }
   
-    setDateSetup({ dates: newDates, viewMode });
-    setBarTasks(
-      convertToBarTasks(
-        filteredTasks,
-        newDates,
-        columnWidth,
-        rowHeight,
-        taskHeight,
-        barCornerRadius,
-        handleWidth,
-        rtl,
-        barProgressColor,
-        barProgressSelectedColor,
-        barBackgroundColor,
-        barBackgroundSelectedColor,
-        projectProgressColor,
-        projectProgressSelectedColor,
-        projectBackgroundColor,
-        projectBackgroundSelectedColor,
-        milestoneBackgroundColor,
-        milestoneBackgroundSelectedColor
-      )
+    return { dates: newDates, viewMode };
+  }, [columnWidth, onExpanderClick, preStepsCount, rtl, scrollX, tasks, viewMode]);
+  const [currentViewDate, setCurrentViewDate] = useState<Date | undefined>(
+    undefined
+  );
+  const taskHeight = useMemo(
+    () => (rowHeight * barFill) / 100,
+    [rowHeight, barFill]
+  );
+  const [taskListWidth, setTaskListWidth] = useState(0);
+  const [svgContainerWidth, setSvgContainerWidth] = useState(0);
+  const [svgContainerHeight, setSvgContainerHeight] = useState(ganttHeight);
+  const barTasks = useMemo<BarTask[]>(() => {
+    let filteredTasks: Task[];
+    if (onExpanderClick) {
+      filteredTasks = removeHiddenTasks(tasks);
+    } else {
+      filteredTasks = tasks;
+    }
+    filteredTasks = filteredTasks.sort(sortTasks);
+  
+    if (rtl) {
+      const new_x = dateSetup.dates.length * columnWidth;
+
+      if (scrollX === -1 && scrollX !== new_x) {
+        setScrollX(new_x);
+      }
+    }
+
+    return convertToBarTasks(
+      filteredTasks,
+      dateSetup.dates,
+      columnWidth,
+      rowHeight,
+      taskHeight,
+      barCornerRadius,
+      handleWidth,
+      rtl,
+      barProgressColor,
+      barProgressSelectedColor,
+      barBackgroundColor,
+      barBackgroundSelectedColor,
+      projectProgressColor,
+      projectProgressSelectedColor,
+      projectBackgroundColor,
+      projectBackgroundSelectedColor,
+      milestoneBackgroundColor,
+      milestoneBackgroundSelectedColor,
+      stateColors,
     );
   }, [
+    dateSetup.dates,
     tasks,
-    viewMode,
-    preStepsCount,
     rowHeight,
     barCornerRadius,
     columnWidth,
@@ -163,10 +168,20 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     projectBackgroundSelectedColor,
     milestoneBackgroundColor,
     milestoneBackgroundSelectedColor,
+    stateColors,
     rtl,
     scrollX,
     onExpanderClick,
   ]);
+  const [ganttEvent, setGanttEvent] = useState<GanttEvent>({
+    action: "",
+  });
+  const [ignoreScrollEvent, setIgnoreScrollEvent] = useState(false);
+
+  const [selectedTask, setSelectedTask] = useState<BarTask>();
+
+  const svgWidth = dateSetup.dates.length * columnWidth;
+  const ganttFullHeight = barTasks.length * rowHeight;
 
   useEffect(() => {
     if (
@@ -184,10 +199,19 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
       if (index === -1) {
         return;
       }
-      setCurrentViewDate(viewDate);
-      setScrollX(columnWidth * index);
+
+      if (currentViewDate !== viewDate) {
+        setCurrentViewDate(viewDate);
+      }
+
+      const new_x = columnWidth * index;
+
+      if (scrollX !== new_x) {
+        setScrollX(columnWidth * index);
+      }
     }
   }, [
+    scrollX,
     viewDate,
     columnWidth,
     dateSetup.dates,
@@ -196,42 +220,6 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     currentViewDate,
     setCurrentViewDate,
   ]);
-
-  useEffect(() => {
-    const { changedTask, action } = ganttEvent;
-    if (changedTask) {
-      if (action === "delete") {
-        setGanttEvent({ action: "" });
-        setBarTasks(barTasks.filter(t => t.id !== changedTask.id));
-      } else if (
-        action === "move" ||
-        action === "end" ||
-        action === "start" ||
-        action === "progress"
-      ) {
-        const prevStateTask = barTasks.find(t => t.id === changedTask.id);
-        if (
-          prevStateTask &&
-          (prevStateTask.start.getTime() !== changedTask.start.getTime() ||
-            prevStateTask.end.getTime() !== changedTask.end.getTime() ||
-            prevStateTask.progress !== changedTask.progress)
-        ) {
-          // actions for change
-          const newTaskList = barTasks.map(t =>
-            t.id === changedTask.id ? changedTask : t
-          );
-          setBarTasks(newTaskList);
-        }
-      }
-    }
-  }, [ganttEvent, barTasks]);
-
-  useEffect(() => {
-    if (failedTask) {
-      setBarTasks(barTasks.map(t => (t.id !== failedTask.id ? t : failedTask)));
-      setFailedTask(null);
-    }
-  }, [failedTask, barTasks]);
 
   useEffect(() => {
     if (!listCellWidth) {
@@ -289,8 +277,11 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     wrapperRef.current?.addEventListener("wheel", handleWheel, {
       passive: false,
     });
+
+    const current_wrapper = wrapperRef.current;
+
     return () => {
-      wrapperRef.current?.removeEventListener("wheel", handleWheel);
+      current_wrapper?.removeEventListener("wheel", handleWheel);
     };
   }, [
     wrapperRef,
@@ -424,7 +415,6 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     svgWidth,
     rtl,
     setGanttEvent,
-    setFailedTask,
     setSelectedTask: handleSelectedTask,
     onDateChange,
     onProgressChange,

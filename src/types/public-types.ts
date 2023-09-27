@@ -12,6 +12,7 @@ export enum ViewMode {
   Year = "Year",
 }
 export type TaskType = "task" | "milestone" | "project";
+export type TaskState = "waiting" | "running" | "completed" | "cached" | "blocked" | "failed";
 export interface Task {
   id: string;
   type: TaskType;
@@ -33,6 +34,7 @@ export interface Task {
   dependencies?: string[];
   hideChildren?: boolean;
   displayOrder?: number;
+  state?: TaskState;
 }
 
 export interface EventOption {
@@ -112,6 +114,7 @@ export interface StylingOption {
   projectBackgroundSelectedColor?: string;
   milestoneBackgroundColor?: string;
   milestoneBackgroundSelectedColor?: string;
+  stateColors?: Record<TaskState, string>;
   arrowColor?: string;
   arrowIndent?: number;
   todayColor?: string;

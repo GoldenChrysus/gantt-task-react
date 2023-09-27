@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { BarTask } from "../../types/bar-task";
 import { GanttContentMoveAction } from "../../types/gantt-task-actions";
 import { Bar } from "./bar/bar";
@@ -29,45 +29,40 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     arrowIndent,
     isDelete,
     taskHeight,
-    isSelected,
     rtl,
     onEventStart,
   } = {
     ...props,
   };
   const textRef = useRef<SVGTextElement>(null);
-  const [taskItem, setTaskItem] = useState<JSX.Element>(<div />);
-  const [isTextInside, setIsTextInside] = useState(true);
+  const task_item = useRef<React.FC<TaskItemProps>>(Milestone);
+  const text_inside = textRef.current && textRef.current.getBBox().width < task.x2 - task.x1;
 
   useEffect(() => {
     switch (task.typeInternal) {
       case "milestone":
-        setTaskItem(<Milestone {...props} />);
+        task_item.current = Milestone;
         break;
       case "project":
-        setTaskItem(<Project {...props} />);
+        task_item.current = Project;
         break;
       case "smalltask":
-        setTaskItem(<BarSmall {...props} />);
+        task_item.current = BarSmall;
         break;
       default:
-        setTaskItem(<Bar {...props} />);
+        task_item.current = Bar;
         break;
     }
-  }, [task, isSelected]);
-
-  useEffect(() => {
-    if (textRef.current) {
-      setIsTextInside(textRef.current.getBBox().width < task.x2 - task.x1);
-    }
-  }, [textRef, task]);
+  }, [task.typeInternal]);
 
   const getX = () => {
     const width = task.x2 - task.x1;
     const hasChild = task.barChildren.length > 0;
-    if (isTextInside) {
+
+    if (text_inside) {
       return task.x1 + width * 0.5;
     }
+
     if (rtl && textRef.current) {
       return (
         task.x1 -
@@ -107,12 +102,12 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         onEventStart("select", task);
       }}
     >
-      {taskItem}
+      {React.createElement(task_item.current, props)}
       <text
         x={getX()}
         y={task.y + taskHeight * 0.5}
         className={
-          isTextInside
+          text_inside
             ? style.barLabel
             : style.barLabel && style.barLabelOutside
         }

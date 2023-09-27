@@ -11,6 +11,7 @@ export function initTasks() {
       progress: 100,
       type: "project",
       hideChildren: false,
+      state: "failed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 4),
@@ -21,16 +22,18 @@ export function initTasks() {
       type: "task",
       project: "F1",
       dependencies: ["F2"],
+      state: "completed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 4),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 7),
+      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 4),
       name: "Task 5",
       id: "T5",
       progress: 100,
       type: "task",
       project: "F1",
       dependencies: ["F2"],
+      state: "cached",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 8),
@@ -41,6 +44,7 @@ export function initTasks() {
       type: "task",
       project: "F1",
       dependencies: ["T4", "T5"],
+      state: "failed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -51,6 +55,7 @@ export function initTasks() {
       type: "project",
       hideChildren: false,
       project: "F1",
+      state: "completed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -60,6 +65,7 @@ export function initTasks() {
       progress: 100,
       type: "task",
       project: "F2",
+      state: "completed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -69,6 +75,7 @@ export function initTasks() {
       progress: 100,
       type: "task",
       project: "F2",
+      state: "completed",
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 2),
@@ -79,6 +86,7 @@ export function initTasks() {
       type: "task",
       project: "F2",
       dependencies: ["T1", "T2"],
+      state: "completed",
     },
   ];
   return tasks;
