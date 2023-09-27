@@ -25,6 +25,25 @@ export const getCachedDateTimeFormat = (
   return dtf;
 };
 
+export const formatToTime = (date: Date, seconds = false) => {
+  const parts: Array<string | number> = [
+    date.getHours(),
+    date.getMinutes(),
+  ];
+
+  if (seconds) {
+    parts.push(date.getSeconds());
+  }
+
+  for (const i in parts) {
+    if (Number(parts[i]) < 10) {
+      parts[i] = `0${parts[i]}`;
+    }
+  }
+
+  return parts.join(':');
+};
+
 export const addToDate = (
   date: Date,
   quantity: number,
@@ -137,6 +156,18 @@ export const ganttDateRange = (
       newEndDate = startOfDate(newEndDate, "day");
       newEndDate = addToDate(newEndDate, 1, "day");
       break;
+    case ViewMode.Minute:
+      newStartDate = startOfDate(newStartDate, "minute");
+      newStartDate = addToDate(newStartDate, -1 * preStepsCount, "minute");
+      newEndDate = startOfDate(newEndDate, "minute");
+      newEndDate = addToDate(newEndDate, 1, "minute");
+      break;
+    case ViewMode.Second:
+      newStartDate = startOfDate(newStartDate, "second");
+      newStartDate = addToDate(newStartDate, -1 * preStepsCount, "second");
+      newEndDate = startOfDate(newEndDate, "second");
+      newEndDate = addToDate(newEndDate, 1, "second");
+      break;
   }
   return [newStartDate, newEndDate];
 };
@@ -173,6 +204,12 @@ export const seedDates = (
         break;
       case ViewMode.Hour:
         currentDate = addToDate(currentDate, 1, "hour");
+        break;
+      case ViewMode.Minute:
+        currentDate = addToDate(currentDate, 1, "minute");
+        break;
+      case ViewMode.Second:
+        currentDate = addToDate(currentDate, 1, "second");
         break;
     }
     dates.push(currentDate);

@@ -113,12 +113,14 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
       preStepsCount
     );
     let newDates = seedDates(startDate, endDate, viewMode);
+  
     if (rtl) {
       newDates = newDates.reverse();
       if (scrollX === -1) {
         setScrollX(newDates.length * columnWidth);
       }
     }
+  
     setDateSetup({ dates: newDates, viewMode });
     setBarTasks(
       convertToBarTasks(
@@ -482,6 +484,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
             TooltipContent={TooltipContent}
             rtl={rtl}
             svgWidth={svgWidth}
+            viewMode={viewMode}
           />
         )}
         <VerticalScroll

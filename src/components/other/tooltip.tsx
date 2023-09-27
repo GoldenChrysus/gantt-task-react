@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Task } from "../../types/public-types";
+import { Task, ViewMode } from "../../types/public-types";
 import { BarTask } from "../../types/bar-task";
 import styles from "./tooltip.module.css";
 
@@ -21,7 +21,9 @@ export type TooltipProps = {
     task: Task;
     fontSize: string;
     fontFamily: string;
+    viewMode: ViewMode;
   }>;
+  viewMode: ViewMode;
 };
 export const Tooltip: React.FC<TooltipProps> = ({
   task,
@@ -37,6 +39,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   headerHeight,
   taskListWidth,
   TooltipContent,
+  viewMode,
 }) => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [relatedY, setRelatedY] = useState(0);
@@ -107,35 +110,62 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }
       style={{ left: relatedX, top: relatedY }}
     >
-      <TooltipContent task={task} fontSize={fontSize} fontFamily={fontFamily} />
+      <TooltipContent viewMode={viewMode} task={task} fontSize={fontSize} fontFamily={fontFamily} />
     </div>
   );
 };
+
+const getDuration = (task: Task, viewMode: ViewMode) => {
+  const duration = task.end.getTime() - task.start.getTime();
+
+  switch (viewMode) {
+    case ViewMode.Minute:
+      return `${duration / (1000 * 60)} minute(s)`;
+
+    case ViewMode.Second:
+      return `${duration / 1000} s`;
+
+    default:
+      return `${duration / (1000 * 60 * 60 * 24)} day(s)`;
+  }
+}
 
 export const StandardTooltipContent: React.FC<{
   task: Task;
   fontSize: string;
   fontFamily: string;
-}> = ({ task, fontSize, fontFamily }) => {
+  viewMode: ViewMode;
+}> = ({ task, fontSize, fontFamily, viewMode }) => {
   const style = {
     fontSize,
     fontFamily,
   };
   return (
     <div className={styles.tooltipDefaultContainer} style={style}>
-      <b style={{ fontSize: fontSize + 6 }}>{`${
-        task.name
-      }: ${task.start.getDate()}-${
-        task.start.getMonth() + 1
-      }-${task.start.getFullYear()} - ${task.end.getDate()}-${
-        task.end.getMonth() + 1
-      }-${task.end.getFullYear()}`}</b>
-      {task.end.getTime() - task.start.getTime() !== 0 && (
-        <p className={styles.tooltipDefaultContainerParagraph}>{`Duration: ${~~(
-          (task.end.getTime() - task.start.getTime()) /
-          (1000 * 60 * 60 * 24)
-        )} day(s)`}</p>
-      )}
+      <b style={{ fontSize: fontSize + 6 }}>
+        <span>{task.name}</span>
+        {
+          ![ViewMode.Minute, ViewMode.Second].includes(viewMode) && (
+            <span>
+              <span>:</span>
+              <span>
+                {
+                  `${task.start.getDate()}-${
+                    task.start.getMonth() + 1
+                  }-${task.start.getFullYear()} - ${task.end.getDate()}-${
+                    task.end.getMonth() + 1
+                  }-${task.end.getFullYear()}`
+                }
+              </span>
+            </span>
+          )
+        }
+      </b>
+      {
+        <p className={styles.tooltipDefaultContainerParagraph}>
+          {`Duration: ${getDuration(task, viewMode)}`}
+        </p>
+      }
 
       <p className={styles.tooltipDefaultContainerParagraph}>
         {!!task.progress && `Progress: ${task.progress} %`}
