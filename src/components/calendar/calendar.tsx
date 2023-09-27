@@ -319,7 +319,7 @@ export const Calendar: React.FC<CalendarProps> = ({
       const date = dates[i];
       const bottomValue = getCachedDateTimeFormat(locale, {
         hour: "numeric",
-      }).format(date);
+      }).format(date) + ':00';
 
       bottomValues.push(
         <text
@@ -334,12 +334,9 @@ export const Calendar: React.FC<CalendarProps> = ({
       );
       if (i !== 0 && date.getDate() !== dates[i - 1].getDate()) {
         const displayDate = dates[i - 1];
-        const topValue = `${getLocalDayOfWeek(
-          displayDate,
-          locale,
-          "long"
-        )}, ${displayDate.getDate()} ${getLocaleMonth(displayDate, locale)}`;
+        const topValue = getCachedDateTimeFormat(locale).format(displayDate);
         const topPosition = (date.getHours() - 24) / 2;
+
         topValues.push(
           <TopPartOfCalendar
             key={topValue + displayDate.getFullYear()}
@@ -378,14 +375,11 @@ export const Calendar: React.FC<CalendarProps> = ({
           {bottomValue}
         </text>
       );
-      if (i !== 0 && date.getDate() !== dates[i - 1].getDate()) {
-        const displayDate = dates[i - 1];
-        const topValue = `${getLocalDayOfWeek(
-          displayDate,
-          locale,
-          "long"
-        )}, ${displayDate.getDate()} ${getLocaleMonth(displayDate, locale)}`;
+      if (i === 1 || (i > 0 && date.getDate() !== dates[i - 1].getDate())) {
+        const displayDate = (i === 1) ? dates[i] : dates[i - 1];
+        const topValue = getCachedDateTimeFormat(locale).format(displayDate);
         const topPosition = 0;
+
         topValues.push(
           <TopPartOfCalendar
             key={topValue + displayDate.getFullYear()}
@@ -423,17 +417,14 @@ export const Calendar: React.FC<CalendarProps> = ({
           {bottomValue}
         </text>
       );
-      if (i !== 0 && date.getDate() !== dates[i - 1].getDate()) {
-        const displayDate = dates[i - 1];
-        const topValue = `${getLocalDayOfWeek(
-          displayDate,
-          locale,
-          "long"
-        )}, ${displayDate.getDate()} ${getLocaleMonth(displayDate, locale)}`;
+      if (i === 1 || (i > 0 && date.getDate() !== dates[i - 1].getDate())) {
+        const displayDate = (i === 1) ? dates[i] : dates[i - 1];
+        const topValue = getCachedDateTimeFormat(locale).format(displayDate);
         const topPosition = 0;
+
         topValues.push(
           <TopPartOfCalendar
-            key={topValue + displayDate.getFullYear()}
+            key={topValue}
             value={topValue}
             x1Line={columnWidth * i}
             y1Line={0}
