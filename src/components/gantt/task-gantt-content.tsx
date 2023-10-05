@@ -54,6 +54,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onClick,
   onDelete,
 }) => {
+  const [hovered, setHovered] = useState<Record<string, boolean>>({});
   const point = svg?.current?.createSVGPoint();
   const dateDelta = (
     dates[1].getTime() -
@@ -197,6 +198,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     }
     // Mouse Events
     else if (action === "mouseenter") {
+      setHovered({...hovered, [task.id]: true});
+
       if (!ganttEvent.action) {
         setGanttEvent({
           action,
@@ -205,6 +208,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         });
       }
     } else if (action === "mouseleave") {
+      setHovered({...hovered, [task.id]: false});
+
       if (ganttEvent.action === "mouseenter") {
         setGanttEvent({ action: "" });
       }
@@ -249,6 +254,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
                 taskHeight={taskHeight}
                 arrowIndent={arrowIndent}
                 rtl={rtl}
+                hovered={hovered[task.id] || hovered[tasks[child.index].id] || false}
               />
             );
           });

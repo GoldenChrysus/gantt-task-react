@@ -8,6 +8,7 @@ type ArrowProps = {
   taskHeight: number;
   arrowIndent: number;
   rtl: boolean;
+  hovered: boolean;
 };
 export const Arrow: React.FC<ArrowProps> = ({
   taskFrom,
@@ -16,6 +17,7 @@ export const Arrow: React.FC<ArrowProps> = ({
   taskHeight,
   arrowIndent,
   rtl,
+  hovered,
 }) => {
   let path: string;
   let trianglePoints: string;
@@ -39,7 +41,7 @@ export const Arrow: React.FC<ArrowProps> = ({
 
   return (
     <g className="arrow">
-      <path strokeWidth="1.5" d={path} fill="none" />
+      <path strokeWidth={(hovered) ? 3.0 : 1.5} d={path} fill="none" />
       <polygon points={trianglePoints} />
     </g>
   );
