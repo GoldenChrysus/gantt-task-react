@@ -91,7 +91,8 @@ export interface DisplayOption {
 
 export interface StylingOption {
   headerHeight?: number;
-  columnWidth?: number;
+  fixedColumnWidth?: number;
+  useDynamicColumnWidth?: boolean;
   listCellWidth?: string;
   rowHeight?: number;
   ganttHeight?: number;

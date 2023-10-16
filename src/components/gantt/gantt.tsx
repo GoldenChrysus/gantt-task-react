@@ -4,6 +4,7 @@ import React, {
   useRef,
   useEffect,
   useMemo,
+  useCallback,
 } from "react";
 import { ViewMode, GanttProps, Task } from "../../types/public-types";
 import { GridProps } from "../grid/grid";
@@ -27,7 +28,8 @@ import styles from "./gantt.module.css";
 export const Gantt: React.FunctionComponent<GanttProps> = ({
   tasks,
   headerHeight = 50,
-  columnWidth = 60,
+  fixedColumnWidth = 60,
+  useDynamicColumnWidth = false,
   listCellWidth = "155px",
   rowHeight = 50,
   ganttHeight = 0,
@@ -74,6 +76,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   onSelect,
   onExpanderClick,
 }) => {
+  const [columnWidth, setColumnWidth] = useState(fixedColumnWidth);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
@@ -109,6 +112,23 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     () => (rowHeight * barFill) / 100,
     [rowHeight, barFill]
   );
+  const setDynamicColumnWidth = useCallback(() => {
+    if (!useDynamicColumnWidth) {
+      return;
+    }
+
+    if (!wrapperRef.current) {
+      if (columnWidth !== fixedColumnWidth) {
+        setColumnWidth(fixedColumnWidth);
+      }
+    } else {
+      const parent_width = wrapperRef.current.parentElement?.offsetWidth;
+
+      if (typeof(parent_width) !== 'undefined') {
+        setColumnWidth(Math.max(parent_width / dateSetup.dates.length, fixedColumnWidth));
+      }
+    }
+  }, [columnWidth, dateSetup.dates.length, fixedColumnWidth, wrapperRef, useDynamicColumnWidth]);
   const [taskListWidth, setTaskListWidth] = useState(0);
   const [svgContainerWidth, setSvgContainerWidth] = useState(0);
   const [svgContainerHeight, setSvgContainerHeight] = useState(ganttHeight);
@@ -235,6 +255,15 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
       setSvgContainerWidth(wrapperRef.current.offsetWidth - taskListWidth);
     }
   }, [wrapperRef, taskListWidth]);
+  useEffect(() => {
+    window.removeEventListener('resize', setDynamicColumnWidth);
+    window.addEventListener('resize', setDynamicColumnWidth);
+
+    return () => {
+      window.removeEventListener('resize', setDynamicColumnWidth);
+    }
+  }, [setDynamicColumnWidth]);
+  useEffect(setDynamicColumnWidth, [setDynamicColumnWidth]);
 
   useEffect(() => {
     if (ganttHeight) {
