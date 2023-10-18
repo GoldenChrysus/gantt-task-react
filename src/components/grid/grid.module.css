@@ -6,7 +6,7 @@
   fill: #f5f5f5;
 }
 
-.gridRow-dark {
+.gridRow-dark:nth-child(even) {
   fill: rgb(41 39 53);
 }
 
