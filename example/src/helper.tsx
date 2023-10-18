@@ -24,6 +24,7 @@ export function initTasks() {
       project: "F1",
       dependencies: ["F2"],
       state: "completed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 4),
@@ -35,6 +36,7 @@ export function initTasks() {
       project: "F1",
       dependencies: ["F2"],
       state: "cached",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 8),
@@ -46,6 +48,7 @@ export function initTasks() {
       project: "F1",
       dependencies: ["T4", "T5"],
       state: "failed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -57,6 +60,7 @@ export function initTasks() {
       hideChildren: false,
       project: "F1",
       state: "completed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -67,6 +71,7 @@ export function initTasks() {
       type: "task",
       project: "F2",
       state: "completed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 0),
@@ -77,6 +82,7 @@ export function initTasks() {
       type: "task",
       project: "F2",
       state: "completed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 2),
