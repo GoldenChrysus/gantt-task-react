@@ -10,7 +10,7 @@
   fill: rgb(41 39 53);
 }
 
-.gridRow-dark:nth-child(even) {
+.gridRow-dark:nth-child(odd) {
   fill: rgb(41 39 53 / 0.8);
 }
 
