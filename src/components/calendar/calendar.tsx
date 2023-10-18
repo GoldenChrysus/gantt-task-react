@@ -482,7 +482,6 @@ export const Calendar: React.FC<CalendarProps> = ({
       [topValues, bottomValues] = getCalendarValuesForSecond();
       break;
   }
-  console.log(styles);
   return (
     <g className="calendar" fontSize={fontSize} fontFamily={fontFamily}>
       <rect
