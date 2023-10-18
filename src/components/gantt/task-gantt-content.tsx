@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { EventOption } from "../../types/public-types";
+import { EventOption, Theme } from "../../types/public-types";
 import { BarTask } from "../../types/bar-task";
 import { Arrow } from "../other/arrow";
 import { handleTaskBySVGMouseEvent } from "../../helpers/bar-helper";
@@ -29,6 +29,7 @@ export type TaskGanttContentProps = {
   rtl: boolean;
   setGanttEvent: (value: GanttEvent) => void;
   setSelectedTask: (taskId: string) => void;
+  theme: Theme;
 } & EventOption;
 
 export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
@@ -53,6 +54,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onDoubleClick,
   onClick,
   onDelete,
+  theme,
 }) => {
   const [hovered, setHovered] = useState<Record<string, boolean>>({});
   const point = svg?.current?.createSVGPoint();
@@ -274,6 +276,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
               key={task.id}
               isSelected={!!selectedTask && task.id === selectedTask.id}
               rtl={rtl}
+              theme={theme}
             />
           );
         })}

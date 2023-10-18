@@ -6,6 +6,7 @@ import { BarSmall } from "./bar/bar-small";
 import { Milestone } from "./milestone/milestone";
 import { Project } from "./project/project";
 import style from "./task-list.module.css";
+import { Theme } from '../../types/public-types';
 
 export type TaskItemProps = {
   task: BarTask;
@@ -21,6 +22,7 @@ export type TaskItemProps = {
     selectedTask: BarTask,
     event?: React.MouseEvent | React.KeyboardEvent
   ) => any;
+  theme: Theme;
 };
 
 export const TaskItem: React.FC<TaskItemProps> = props => {
@@ -31,6 +33,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     taskHeight,
     rtl,
     onEventStart,
+    theme,
   } = {
     ...props,
   };
@@ -109,7 +112,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         className={
           text_inside
             ? style.barLabel
-            : style.barLabel && style.barLabelOutside
+            : `${style.barLabel} ${style.barLabelOutside} ${style[`barLabelOutside-${theme}`]}`
         }
         ref={textRef}
       >

@@ -9,8 +9,16 @@
   pointer-events: none;
 }
 
+.calendarBottomText-dark {
+  fill: rgb(199 202 209);
+}
+
 .calendarTopTick {
   stroke: #e6e4e4;
+}
+
+.calendarTopTick-dark {
+  stroke: none;
 }
 
 .calendarTopText {
@@ -28,4 +36,10 @@
   fill: #ffffff;
   stroke: #e0e0e0;
   stroke-width: 1.4;
+}
+
+.calendarHeader-dark {
+  fill: rgb(41 39 53);
+  stroke: none;
+  color: rgb(199 202 209);
 }

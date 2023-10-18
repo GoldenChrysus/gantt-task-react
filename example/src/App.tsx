@@ -68,7 +68,7 @@ const App = () => {
   };
 
   return (
-    <div className="Wrapper">
+    <div className="Wrapper dark">
       <ViewSwitcher
         onViewModeChange={viewMode => setView(viewMode)}
         onViewListChange={setIsChecked}
@@ -78,6 +78,7 @@ const App = () => {
       <Gantt
         key="gantt-unlimited"
         tasks={tasks}
+        theme="dark"
         viewMode={view}
         onDateChange={handleTaskChange}
         onDelete={handleTaskDelete}

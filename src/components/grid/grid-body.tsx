@@ -1,5 +1,5 @@
 import React, { ReactChild } from "react";
-import { Task } from "../../types/public-types";
+import { Task, Theme } from "../../types/public-types";
 import { addToDate } from "../../helpers/date-helper";
 import styles from "./grid.module.css";
 
@@ -11,6 +11,7 @@ export type GridBodyProps = {
   columnWidth: number;
   todayColor: string;
   rtl: boolean;
+  theme: Theme;
 };
 export const GridBody: React.FC<GridBodyProps> = ({
   tasks,
@@ -20,6 +21,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
   columnWidth,
   todayColor,
   rtl,
+  theme,
 }) => {
   let y = 0;
   const gridRows: ReactChild[] = [];
@@ -30,7 +32,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
       y1={0}
       x2={svgWidth}
       y2={0}
-      className={styles.gridRowLine}
+      className={`${styles.gridRowLine} ${styles[`gridRowLine-${theme}`]}`}
     />,
   ];
   for (const task of tasks) {
@@ -41,7 +43,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
         y={y}
         width={svgWidth}
         height={rowHeight}
-        className={styles.gridRow}
+        className={`${styles.gridRow} ${styles[`gridRow-${theme}`]}`}
       />
     );
     rowLines.push(
@@ -51,7 +53,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
         y1={y + rowHeight}
         x2={svgWidth}
         y2={y + rowHeight}
-        className={styles.gridRowLine}
+        className={`${styles.gridRowLine} ${styles[`gridRowLine-${theme}`]}`}
       />
     );
     y += rowHeight;
@@ -70,7 +72,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
         y1={0}
         x2={tickX}
         y2={y}
-        className={styles.gridTick}
+        className={`${styles.gridTick} ${styles[`gridTick-${theme}`]}`}
       />
     );
     if (

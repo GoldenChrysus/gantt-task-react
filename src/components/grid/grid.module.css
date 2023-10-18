@@ -6,10 +6,26 @@
   fill: #f5f5f5;
 }
 
+.gridRow-dark {
+  fill: rgb(41 39 53);
+}
+
+.gridRow-dark:nth-child(even) {
+  fill: rgb(41 39 53 / 0.8);
+}
+
 .gridRowLine {
   stroke: #ebeff2;
 }
 
+.gridRowLine-dark {
+  stroke-width: 0.1px;
+}
+
 .gridTick {
   stroke: #e6e4e4;
+}
+
+.gridTick-dark {
+  stroke-width: 0.1px;
 }

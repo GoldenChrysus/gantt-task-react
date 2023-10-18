@@ -27,6 +27,7 @@ import styles from "./gantt.module.css";
 
 export const Gantt: React.FunctionComponent<GanttProps> = ({
   tasks,
+  theme = "light",
   headerHeight = 50,
   fixedColumnWidth = 60,
   useDynamicColumnWidth = false,
@@ -59,11 +60,11 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   rtl = false,
   handleWidth = 8,
   timeStep = 300000,
-  arrowColor = "grey",
+  arrowColor = "",
   fontFamily = "Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue",
   fontSize = "14px",
   arrowIndent = 20,
-  todayColor = "rgba(252, 248, 227, 0.5)",
+  todayColor = "",
   viewDate,
   TooltipContent = StandardTooltipContent,
   TaskListHeader = TaskListHeaderDefault,
@@ -76,6 +77,16 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   onSelect,
   onExpanderClick,
 }) => {
+  const calculatedTodayColor = ((todayColor)
+    ? todayColor
+    : ((theme === "light")
+      ? "rgba(252, 248, 227, 0.5)"
+      : "rgb(22 20 31 / 0.3)"));
+  const calculatedArrowColor = ((arrowColor)
+    ? arrowColor
+    : ((theme === "light")
+      ? "grey"
+      : "rgb(211 211 211)"));
   const [columnWidth, setColumnWidth] = useState(fixedColumnWidth);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
@@ -415,8 +426,9 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     tasks: tasks,
     rowHeight,
     dates: dateSetup.dates,
-    todayColor,
+    todayColor: calculatedTodayColor,
     rtl,
+    theme,
   };
   const calendarProps: CalendarProps = {
     dateSetup,
@@ -427,6 +439,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     fontFamily,
     fontSize,
     rtl,
+    theme,
   };
   const barProps: TaskGanttContentProps = {
     tasks: barTasks,
@@ -436,7 +449,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     rowHeight,
     taskHeight,
     columnWidth,
-    arrowColor,
+    arrowColor: calculatedArrowColor,
     timeStep,
     fontFamily,
     fontSize,
@@ -450,6 +463,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     onDoubleClick,
     onClick,
     onDelete,
+    theme,
   };
 
   const tableProps: TaskListProps = {
@@ -504,6 +518,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
             rtl={rtl}
             svgWidth={svgWidth}
             viewMode={viewMode}
+            theme={theme}
           />
         )}
         <VerticalScroll

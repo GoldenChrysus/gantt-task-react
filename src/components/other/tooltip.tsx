@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Task, ViewMode } from "../../types/public-types";
+import { Task, Theme, ViewMode } from "../../types/public-types";
 import { BarTask } from "../../types/bar-task";
 import styles from "./tooltip.module.css";
 
@@ -22,8 +22,10 @@ export type TooltipProps = {
     fontSize: string;
     fontFamily: string;
     viewMode: ViewMode;
+    theme: Theme;
   }>;
   viewMode: ViewMode;
+  theme: Theme;
 };
 export const Tooltip: React.FC<TooltipProps> = ({
   task,
@@ -40,6 +42,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   taskListWidth,
   TooltipContent,
   viewMode,
+  theme,
 }) => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [relatedY, setRelatedY] = useState(0);
@@ -110,7 +113,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }
       style={{ left: relatedX, top: relatedY }}
     >
-      <TooltipContent viewMode={viewMode} task={task} fontSize={fontSize} fontFamily={fontFamily} />
+      <TooltipContent viewMode={viewMode} task={task} fontSize={fontSize} fontFamily={fontFamily} theme={theme} />
     </div>
   );
 };
@@ -135,14 +138,15 @@ export const StandardTooltipContent: React.FC<{
   fontSize: string;
   fontFamily: string;
   viewMode: ViewMode;
-}> = ({ task, fontSize, fontFamily, viewMode }) => {
+  theme: Theme;
+}> = ({ task, fontSize, fontFamily, viewMode, theme }) => {
   const style = {
     fontSize,
     fontFamily,
   };
   return (
-    <div className={styles.tooltipDefaultContainer} style={style}>
-      <b style={{ fontSize: fontSize + 6 }}>
+    <div className={`${styles.tooltipDefaultContainer} ${styles[`tooltipDefaultContainer-${theme}`]}`} style={style}>
+      <b className={styles[`tooltipHeader-${theme}`]} style={{ fontSize: fontSize + 6 }}>
         <span>{task.name}</span>
         {
           ![ViewMode.Minute, ViewMode.Second].includes(viewMode) && (
@@ -162,16 +166,16 @@ export const StandardTooltipContent: React.FC<{
         }
       </b>
       {
-        <p className={styles.tooltipDefaultContainerParagraph}>
+        <p className={`${styles.tooltipDefaultContainerParagraph} ${styles[`tooltipDefaultContainerParagraph-${theme}`]}`}>
           {`Duration: ${getDuration(task, viewMode)}`}
         </p>
       }
 
-      <p className={styles.tooltipDefaultContainerParagraph}>
+      <p className={`${styles.tooltipDefaultContainerParagraph} ${styles[`tooltipDefaultContainerParagraph-${theme}`]}`}>
         {!!task.progress && `Progress: ${task.progress}%`}
       </p>
 
-      <p className={styles.tooltipDefaultContainerParagraph}>
+      <p className={`${styles.tooltipDefaultContainerParagraph} ${styles[`tooltipDefaultContainerParagraph-${theme}`]}`}>
         {!!task.state && `Status: ${task.state.charAt(0).toUpperCase() + task.state.slice(1)}`}
       </p>
     </div>

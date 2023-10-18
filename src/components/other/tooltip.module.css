@@ -4,10 +4,22 @@
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
+.tooltipDefaultContainer-dark {
+  background: rgb(22, 20, 31);
+}
+
 .tooltipDefaultContainerParagraph {
   font-size: 12px;
   margin-bottom: 6px;
   color: #666;
+}
+
+.tooltipDefaultContainerParagraph-dark {
+  color: rgb(199 202 209);
+}
+
+.tooltipHeader-dark {
+  color: rgb(199 202 209);
 }
 
 .tooltipDetailsContainer {

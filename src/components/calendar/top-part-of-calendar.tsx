@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./calendar.module.css";
+import { Theme } from '../../types/public-types';
 
 type TopPartOfCalendarProps = {
   value: string;
@@ -8,6 +9,7 @@ type TopPartOfCalendarProps = {
   y2Line: number;
   xText: number;
   yText: number;
+  theme: Theme;
 };
 
 export const TopPartOfCalendar: React.FC<TopPartOfCalendarProps> = ({
@@ -17,6 +19,7 @@ export const TopPartOfCalendar: React.FC<TopPartOfCalendarProps> = ({
   y2Line,
   xText,
   yText,
+  theme,
 }) => {
   return (
     <g className="calendarTop">
@@ -25,7 +28,7 @@ export const TopPartOfCalendar: React.FC<TopPartOfCalendarProps> = ({
         y1={y1Line}
         x2={x1Line}
         y2={y2Line}
-        className={styles.calendarTopTick}
+        className={`${styles.calendarTopTick} ${styles[`calendarTopTick-${theme}`]}`}
         key={value + "line"}
       />
       <text

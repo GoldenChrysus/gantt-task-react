@@ -12,6 +12,7 @@ export function initTasks() {
       type: "project",
       hideChildren: false,
       state: "failed",
+      isDisabled: true,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 12, 30, 4),
@@ -87,6 +88,7 @@ export function initTasks() {
       project: "F2",
       dependencies: ["T1", "T2"],
       state: "completed",
+      isDisabled: true,
     },
   ];
   return tasks;

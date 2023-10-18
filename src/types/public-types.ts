@@ -13,6 +13,8 @@ export enum ViewMode {
 }
 export type TaskType = "task" | "milestone" | "project";
 export type TaskState = "waiting" | "running" | "completed" | "cached" | "blocked" | "failed";
+export type Theme = "light" | "dark";
+
 export interface Task {
   id: string;
   type: TaskType;
@@ -90,6 +92,7 @@ export interface DisplayOption {
 }
 
 export interface StylingOption {
+  theme?: Theme;
   headerHeight?: number;
   fixedColumnWidth?: number;
   useDynamicColumnWidth?: boolean;
