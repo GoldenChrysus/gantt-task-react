@@ -8,6 +8,7 @@ import {
   getLocalDayOfWeek,
   getLocaleMonth,
   getWeekNumberISO8601,
+  prefixZero,
 } from "../../helpers/date-helper";
 import { DateSetup } from "../../types/date-setup";
 import styles from "./calendar.module.css";
@@ -371,7 +372,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
-      const bottomValue = formatToTime(date);
+      const bottomValue = prefixZero(date.getMinutes());
 
       bottomValues.push(
         <text
@@ -384,14 +385,13 @@ export const Calendar: React.FC<CalendarProps> = ({
           {bottomValue}
         </text>
       );
-      if (i === 1 || (i > 0 && date.getDate() !== dates[i - 1].getDate())) {
-        const displayDate = (i === 1) ? dates[i] : dates[i - 1];
-        const topValue = getCachedDateTimeFormat(locale).format(displayDate);
+      if (i === 1 || (i > 0 && date.getHours() !== dates[i - 1].getHours())) {
+        const topValue = getCachedDateTimeFormat(locale).format(date) + ' ' + prefixZero(date.getHours()) + ':XX';
         const topPosition = 0;
 
         topValues.push(
           <TopPartOfCalendar
-            key={topValue + displayDate.getFullYear()}
+            key={topValue}
             value={topValue}
             x1Line={columnWidth * i}
             y1Line={0}
@@ -414,7 +414,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     const dates = dateSetup.dates;
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
-      const bottomValue = formatToTime(date, true);
+      const bottomValue = prefixZero(date.getSeconds());
 
       bottomValues.push(
         <text
@@ -427,9 +427,8 @@ export const Calendar: React.FC<CalendarProps> = ({
           {bottomValue}
         </text>
       );
-      if (i === 1 || (i > 0 && date.getDate() !== dates[i - 1].getDate())) {
-        const displayDate = (i === 1) ? dates[i] : dates[i - 1];
-        const topValue = getCachedDateTimeFormat(locale).format(displayDate);
+      if (i === 1 || (i > 0 && date.getMinutes() !== dates[i - 1].getMinutes())) {
+        const topValue = getCachedDateTimeFormat(locale).format(date) + ' ' + formatToTime(date) + ':XX';
         const topPosition = 0;
 
         topValues.push(

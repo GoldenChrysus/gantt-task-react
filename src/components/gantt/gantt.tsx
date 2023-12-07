@@ -92,6 +92,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   const taskListRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
   const [scrollX, setScrollX] = useState(-1);
+  const [zoomFactor, setZoomFactor] = useState(1);
   const dateSetup = useMemo<DateSetup>(() => {
     let filteredTasks: Task[];
     if (onExpanderClick) {
@@ -124,22 +125,42 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     [rowHeight, barFill]
   );
   const setDynamicColumnWidth = useCallback(() => {
+    const zoomedWidth = Math.max(20, fixedColumnWidth * zoomFactor);
+
     if (!useDynamicColumnWidth) {
+      if (columnWidth !== zoomedWidth) {
+        setColumnWidth(zoomedWidth);
+      }
+
       return;
     }
 
     if (!wrapperRef.current) {
-      if (columnWidth !== fixedColumnWidth) {
-        setColumnWidth(fixedColumnWidth);
+      if (columnWidth !== zoomedWidth) {
+        setColumnWidth(zoomedWidth);
       }
     } else {
       const parent_width = wrapperRef.current.parentElement?.offsetWidth;
 
       if (typeof(parent_width) !== 'undefined') {
-        setColumnWidth(Math.max(parent_width / dateSetup.dates.length, fixedColumnWidth));
+        const dynamicWidth = parent_width / dateSetup.dates.length;
+        const minimumWidth = Math.max(20, dynamicWidth);
+        const calculatedWidth = Math.max(dynamicWidth, fixedColumnWidth) * zoomFactor;
+        const zoomedWidth = Math.max(minimumWidth, calculatedWidth);
+
+        if (zoomFactor < 1 && (calculatedWidth * dateSetup.dates.length) < parent_width) {
+          // If here, the zoomed-out width is less than the calculated dynamic width, so reset the zoom to 1.
+          // Zooming out beyond the minimum dynamic width is not allowed.
+          setZoomFactor(zoomFactor + 0.05);
+          return;
+        }
+
+        setColumnWidth(zoomedWidth);
+      } else {
+        setColumnWidth(zoomedWidth);
       }
     }
-  }, [columnWidth, dateSetup.dates.length, fixedColumnWidth, wrapperRef, useDynamicColumnWidth]);
+  }, [columnWidth, dateSetup.dates.length, fixedColumnWidth, wrapperRef, useDynamicColumnWidth, zoomFactor]);
   const [taskListWidth, setTaskListWidth] = useState(0);
   const [svgContainerWidth, setSvgContainerWidth] = useState(0);
   const [svgContainerHeight, setSvgContainerHeight] = useState(ganttHeight);
@@ -297,6 +318,16 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
         }
         setScrollX(newScrollX);
         event.preventDefault();
+      } else if (event.ctrlKey) {
+        event.preventDefault();
+
+        if (!event.deltaY) {
+          return;
+        }
+
+        const zoom = (event.deltaY < 0) ? 1 : -1;
+
+        setZoomFactor(Math.max(0, zoomFactor + (0.05 * zoom)));
       } else if (ganttHeight) {
         let newScrollY = scrollY + event.deltaY;
         if (newScrollY < 0) {
@@ -331,6 +362,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     svgWidth,
     rtl,
     ganttFullHeight,
+    zoomFactor,
   ]);
 
   const handleScrollY = (event: SyntheticEvent<HTMLDivElement>) => {

@@ -35,13 +35,12 @@ export const formatToTime = (date: Date, seconds = false) => {
     parts.push(date.getSeconds());
   }
 
-  for (const i in parts) {
-    if (Number(parts[i]) < 10) {
-      parts[i] = `0${parts[i]}`;
-    }
-  }
-
+  parts.map(prefixZero);
   return parts.join(':');
+};
+
+export const prefixZero = (value: number | string) => {
+  return (Number(value) < 10) ? `0${value}` : String(value);
 };
 
 export const addToDate = (
